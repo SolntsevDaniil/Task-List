@@ -26,7 +26,7 @@ class TaskList {
 	};
 
 	addTask() {
-		if (this.input.value == '') { alert('Add a task'); };
+		if (this.input.value == '') { alert('Add a task'); return false; };
 
 		const li = document.createElement('li');
 		li.className = 'collection-item';
@@ -38,13 +38,36 @@ class TaskList {
 		li.appendChild(link);
 		list.appendChild(li);
 
+		let tasks;
+		if (localStorage.getItem('tasks') === null) {
+			tasks = [];
+		} else { tasks = JSON.parse(localStorage.getItem('tasks')); };
+	
+		tasks.push(this.input.value);
+		localStorage.setItem('tasks', JSON.stringify(tasks));
+
 		this.input.value = '';
 		event.preventDefault();
 	};
 
 	removeTask() {
 		if (event.target.parentElement.classList.contains('delete-item')) {
-			if (confirm('Are you sure?')) { event.target.parentElement.parentElement.remove(); };
+			if (confirm('Are you sure?')) {
+				event.target.parentElement.parentElement.remove();
+
+				let tasks;
+				if (localStorage.getItem('tasks') === null) {
+					tasks = [];
+				} else { tasks = JSON.parse(localStorage.getItem('tasks'))};
+			
+				tasks.forEach(function(task, index) {
+					if (event.target.parentElement.parentElement.textContent == task) {
+						tasks.splice(index, 1);
+					}
+				});
+			
+				localStorage.setItem('tasks', JSON.stringify(tasks));
+			};
 		};
 	};
 
